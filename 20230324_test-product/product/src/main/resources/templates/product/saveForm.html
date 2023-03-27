@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{title.product.add}">상품등록</title>
+    <style>
+
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h3 th:text="#{title.product.add}">상품등록</h3>
+        <div>
+            <form name="frm" action="" method="post" th:object="${saveForm}">
+                <div>
+                    <label for="" th:text="#{label.product.pname}">상품명</label>
+                    <input type="text" name="pname" th:field="*{pname}"/>
+                </div>
+                <div>
+                    <label for="" th:text="#{label.product.quantity}">수량</label>
+                    <input type="text" name="quantity" th:field="*{quantity}"/>
+                </div>
+                <div>
+                    <label for="" th:text="#{label.product.price}">가격</label>
+                    <input type="text" name="price" th:field="*{price}"/>
+                </div>
+                <div>
+                    <button type="submit" th:text="#{button.add}" id="btnAdd">등록</button>
+                    <button type="submit">목록</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        const $btnAdd = document.getElementById('btnAdd');
+        $btnAdd.addEventListener('click', add_h, false);
+    </script>
+</body>
+</html>

@@ -15,6 +15,7 @@
 <!--                thead+tbody+tfoot 형제노드-->
                 <thead>
                     <tr>
+                        <th id="all"></th>
                         <th>ID</th>
                         <th>상품명</th>
                         <th>수량</th>
@@ -23,6 +24,9 @@
                 </thead>
                 <tbody>
                     <tr th:each="product : ${products}">
+                        <th>
+                            <input type="checkbox" name="chk">
+                        </th>
                         <td th:text="${product.productId}">ID</td>
                         <td th:text="${product.pname}">
 <!--                            th: 다음엔 모두 사용가능하다-->
@@ -41,11 +45,17 @@
     </div>
 <script>
     const $btnAll = document.getElementById('btnAdd');
-
-    //업데이트 폼에 이전 객체 업데이트
-    const
     const btnAdd_h = e => location.href = `/products/ass`;
     $btnAdd.addEventListener('click', btnAdd_h, false);
+
+    const $all = document.getElementById('all');
+    const all_h = e => {
+        const $chks = document.querySelectorAll('.wrap table input[name=chk]');
+
+
+        Array.from($chks).forEach( input => input.value('checked');
+    }
+    $all.addEventListener('click', all_h, false);
 </script>
 
 </body>

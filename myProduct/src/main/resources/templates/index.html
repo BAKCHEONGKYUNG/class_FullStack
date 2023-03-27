@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,9 @@
   <h3>초기화면</h3>
   <hr>
   <ul>
-    <li><a href="/products/add">상품관리</a></li>
+    <li><a href="/products" th:href="@{/products}">상품관리 - SSR</a></li>
+      //GET방식
+    <li><a href="/csr/products" th:href="@{/csr/products}">상품관리 - CSR</a></li>
   </ul>
 </body>
 </html>

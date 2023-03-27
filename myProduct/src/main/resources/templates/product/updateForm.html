@@ -6,27 +6,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품수정 양식</title>
+    <link rel="stylesheet" href="" th:href="@{/css/common.css}">
 </head>
 <body>
 <div class="wrap">
     <h3>상품조회</h3>
     <div>
-        <form action="" method="POST" th:object="${form}">
+        <form action="" method="POST" th:object="${updateForm}">
             <div>
-                <label for="">상품번호</label>
+                <label for="productId">상품번호</label>
                 <input type="text" name="productId" readonly th:field="*{productId}">
             </div>
             <div>
-                <label for="">상품명</label>
+                <label for="pname">상품명</label>
                 <input type="text" name="pname" th:field="*{pname}">
+                <span class="field-error"></span>
+                <span class="field-error" th:errors="*{pname}"></span>
             </div>
             <div>
-                <label for="">수량</label>
+                <label for="quantity">수량</label>
                 <input type="text" name="quantity" th:field="*{quantity}">
+                <span class="field-error"></span>
+                <span class="field-error" th:errors="*{quantity}"></span>
             </div>
             <div>
-                <label for="">가격</label>
+                <label for="price">가격</label>
                 <input type="text" name="price" th:field="*{price}">
+                <span class="field-error"></span>
+                <span class="field-error" th:errors="*{price}"></span>
             </div>
             <div>
                 <button type="submit" id="btnSave" th:text="#{button.save}">저장</button>
@@ -52,6 +59,80 @@
 
     $btnCancle.addEventListener('click', btnCancle_h, false);
     $btnFindAll.addEventListener('click', btnFindAll_h, false);
+
+
+    const $btnAdd = document.getElementById('btnAdd');
+    const add_h = e => {
+        e.preventDefault(); //기본 이벤트 막기
+
+        const $field-errors = document.querySelector('field-error);
+
+        const clear = () => Array.form($field-errors).forEach(ele => ele.nextElementSibling.textContent= '');
+
+        //검증
+        //form 객체에 id값or name값 부여
+        //const frm = document.forms['frm'];
+        if(pname.value.trim().length == 0){
+            //alert('상품명을 입력하시게');
+            const msg = '상품명을 입력하시게';
+            pname.nextElementSibling.textContent = msg;
+            //alert(pname.nextElementSibling);
+            pname.focus();
+            return;
+
+        //타입 검증
+        if(quantity.value.trim().length == 0){
+            //alert('수량을 입력하시게');
+            const msg = '수량을 입력하시게';
+            quantity.nextElementSibling.textContent = msg;
+            quantity.focus();
+            return;
+        }else{
+            clear();
+        }
+
+        const regExp = /[^0-9]/g;
+        if(!regExp.test(quantity.value)){
+            //alert('공짜인겐가');
+            const msg = '숫자를 너으시게....';
+            price.nextElementSibling.textContent = msg;
+            price.focus();
+            return;
+        }else{
+            clear();
+        }
+
+
+        if(price.value.trim().length == 0){
+            const msg = '공짜인겐가 가격을 너으시게....';
+            price.nextElementSibling.textContent = msg;
+            price.focus();
+            return;
+        }else{
+            clear();
+        }
+
+
+        if(!regExp.test(price.value.trim())){
+            const msg = '숫자를 입력하시게...';
+            price.nextElementSibling.textContent = msg;
+            price.focus();
+            price.selected();
+            return;
+        }else{
+            price.nextElementSibling.textContent = '';
+        }
+
+
+        //전송
+        //document.forms['frm'].submit();
+        frm.submit();
+
+
+        //접근1) console.log($frm);
+        //접근2) console.log(frm).elements['pname'];
+    }
+    $btnSave.addEventListener('click', add_h, false);
 </script>
 </body>
 </html>

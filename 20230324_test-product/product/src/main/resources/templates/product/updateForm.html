@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품수정 양식</title>
+    <style>
+
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h3>상품수정</h3>
+    <div>
+        <form name="frm" action="" method="POST" th:object="${updateForm}">
+            <div>
+                <label for="pId">상품번호</label>
+                <input type="text" name="pId" readonly th:field="*{pId}">
+            </div>
+            <div>
+                <label for="pname">상품명</label>
+                <input type="text" name="pname" th:field="*{pname}">
+            </div>
+            <div>
+                <label for="quantity">수량</label>
+                <input type="text" name="quantity" th:field="*{quantity}">
+            </div>
+            <div>
+                <label for="price">가격</label>
+                <input type="text" name="price" th:field="*{price}">
+            </div>
+            <div>
+                <button type="submit" id="btnSave" th:text="#{button.update}">저장</button>
+                <button type="button" id="btnCancle" th:text="#{button.cancle}">취소</button>
+                <button type="button" id="btnFindAll" th:text="#{button.list}">목록</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    const $btnSave = document.getElementById('btnSave');
+    const $btnCancle = document.getElementById('btnCancle');
+    const $btnFindAll = document.getElementById('btnFindAll');
+
+    const btnCancle_h = e => {
+        globalThis.location.back();
+    }
+
+    const btnFindAll_h = e => {
+        globalThis.location.href=`/products`;
+    }
+
+    $btnCancle.addEventListener('click', btnCancle_h, false);
+    $btnFindAll.addEventListener('click', btnFindAll_h, false);
+
+    const $btnSave = document.getElementById('btnSave');
+    const save_h = e => {
+        e.preventDefault();
+
+        if(pname.value.trim().length == 0){
+            const msg '상품명을 입력하시오';
+            pname.nextElementSibling.textContent = msg;
+            pname.focus();
+            return;
+        }
+
+        if(quantity.value.trim().length == 0){
+            const msg = '수량을 입력하시오';
+            quantity.nextElementSibling.textContent = msg;
+            quantity.focus();
+            return;
+        } else {
+            clear();
+        }
+
+        if(price.value.trim().length == 0){
+            const msg = '가격을 입력하세요';
+            price.nextElementSibling.textContent = msg;
+            price.focus();
+            return;
+        } else {
+            clear();
+        }
+
+        frm.submit();
+
+    }
+
+    $btnSave.addEventListener('click', save_h, false);
+
+</script>
+</body>
+</html>

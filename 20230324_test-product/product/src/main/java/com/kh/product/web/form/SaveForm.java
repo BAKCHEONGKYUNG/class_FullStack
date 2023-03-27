@@ -1,18 +1,20 @@
-package com.kh.myProduct.web.form;
+package com.kh.product.web.form;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-//등록처리
-public class UpdateForm {
-    private Long productId;
-    //수정할때
+public class SaveForm {
     @NotBlank
     private String pname;
+
     @NotNull
+    @Positive
     private Long quantity;
+
     @NotNull
+    @Positive
     private Long price;
 }

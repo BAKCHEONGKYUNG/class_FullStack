@@ -30,7 +30,7 @@ public class ProductController {
     @GetMapping("/add")
     public String saveForm(Model model){
         SaveForm saveForm = new SaveForm();
-        model.addAttribute("form", saveForm);
+        model.addAttribute("saveForm", saveForm);
         return "product/saveForm";  //view를 찾는 상대 경로
     }
 
@@ -43,7 +43,13 @@ public class ProductController {
             //web.SaveFrom
 
             //데이터 검증1)
-            @Valid @ModelAttribute("form") SaveForm saveForm,
+//            @ModelAttribute
+//            1.요청데이터를 자바객체로 바인딩
+//            2.Model객체에 추가(Model객체는 view단에 접근 가능: 조회할 때 사용/detailForm.html "${form}" 이런식으로 접근가능(key, value))
+//                    view 단에선 SaveForm 으로 해서 "form"이라는 매개값에 너어서 접근 가능
+
+//            @Valid @ModelAttribute("form") SaveForm saveForm,
+            @Valid @ModelAttribute SaveForm saveForm,
             BindingResult bindingResult, //검증결과를 담는 객체
             RedirectAttributes redirectAttributes
             ) {
@@ -58,18 +64,18 @@ public class ProductController {
 
         //필드 오류
         if(saveForm.getQuantity() == 100){
-            bindingResult.rejectValue("quantity", "", "수량 100 입력불가!");
+            bindingResult.rejectValue("quantity", "product");
         }
 
         //글로벌 오류
         //비즈니스 룰) 총액(상품수량*단가) 1000만원 초과 금지
         if(saveForm.getQuantity() * saveForm.getPrice() > 10_000_000L){
-            bindingResult.reject("",null,"총액(상품수량*단가) 1000만원 초과 금지");
+            bindingResult.reject("totalprice",new String[]{"1000"},"");
         }
 
         //등록된 갯수 만큼
         if(saveForm.getQuantity() > 1 && saveForm.getQuantity() < 10){
-            bindingResult.reject("",null,"10이상 이어야한다.");
+            bindingResult.reject("quantity",new String[]{"1","2"},"");
         }
 
         //데이터 검증2)
@@ -112,7 +118,7 @@ public class ProductController {
         detailForm.setQuantity(product.getQuantity());
         detailForm.setPrice(product.getPrice());
 
-        model.addAttribute("form", product);
+        model.addAttribute("detailForm", detailForm);
         return "product/detailForm";
     }
 
@@ -131,8 +137,8 @@ public class ProductController {
         updateForm.setQuantity(product.getQuantity());
         updateForm.setPrice(product.getPrice());
 
-        //view에서 참고할 수 있게
-        model.addAttribute("form", updateForm);
+        //view에서 참고할 수 있게`
+        model.addAttribute("updateForm", updateForm);
         return "product/updateForm";
     }
 
@@ -140,11 +146,18 @@ public class ProductController {
     @PostMapping("/{id}/edit")
     public String update(
             @PathVariable("id") Long productId,
-            @ModelAttribute("form") UpdateForm updateForm,
+            @Valid @ModelAttribute UpdateForm updateForm,
+            BindingResult bindingResult,
             //id값 전달을 위해
             RedirectAttributes redirectAttributes
     ){
+        //데이터 검증
+        if (bindingResult.hasErrors()){
+            log.info("bindingResult={}", bindingResult);
+            return "product/updateForm";
+        }
 
+        //정산처리
         Product product = new Product();
         product.setProductId(productId);
         product.setPname(updateForm.getPname());
@@ -172,6 +185,9 @@ public class ProductController {
         List<Product> products = productSVC.findAll();
         model.addAttribute("products", products);
 
+        if (products.size() == 0) {
+            throw new RuntimeException("오류발생");
+        }
         return "product/all";
     }
 
