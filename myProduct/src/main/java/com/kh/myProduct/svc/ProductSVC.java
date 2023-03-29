@@ -25,4 +25,9 @@ public interface ProductSVC {
      */
     boolean isExist(Long productId);
 
+    /**
+     * 선택 삭제
+     * @param productIds
+     */
+    void deleteParts(List<Long> productIds);
 }

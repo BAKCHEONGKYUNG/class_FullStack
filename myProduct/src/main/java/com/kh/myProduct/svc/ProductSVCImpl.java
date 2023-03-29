@@ -50,4 +50,14 @@ public class ProductSVCImpl implements ProductSVC {
     public boolean isExist(Long productId) {
         return productDAO.isExist(productId);
     }
+
+    /**
+     * 선택 삭제
+     *
+     * @param productIds
+     */
+    @Override
+    public void deleteParts(List<Long> productIds) {
+
+    }
 }

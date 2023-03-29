@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Controller
 @RequestMapping("/products")
-@RequiredArgsConstructor
+@RequiredArgsConstructor    //final 멤버 필드를 매개값으로 하는 생성자를 자동 생성
 public class ProductController {
 
     private final ProductSVC productSVC;
@@ -56,6 +56,8 @@ public class ProductController {
 //        log.info("pname={}, quantity={}, price={}", pname,quantity,price);
         log.info("saveForm={}", saveForm);
 
+
+        //데이터 검증
         //어노테이션 기반 검증
         if(bindingResult.hasErrors()){
             log.info("bindingResult={}", bindingResult);
@@ -93,21 +95,19 @@ public class ProductController {
         product.setQuantity(saveForm.getQuantity());
         product.setPrice(saveForm.getPrice());
 
-
-//        Long save = productSVC.save(product);
         Long savedProductId = productSVC.save(product);
-        //redirectAttributes 받아서
         redirectAttributes.addAttribute("id", savedProductId);
         //조회하면서 가야하기 때문에
         return "redirect:/products/{id}/detail";
     }
 
-    //등록한 상품조회
+    //등록한
+    //상품조회
     @GetMapping("/{id}/detail")
     public String findById(
             @PathVariable("id") Long id,
             Model model
-            ){
+    ){
         //값이 없을 수 있기 때문에 Optional로 값을 감싸준다.
         Optional<Product> findedProduct = productSVC.findById(id);
         Product product = findedProduct.orElseThrow();
@@ -137,19 +137,18 @@ public class ProductController {
         updateForm.setQuantity(product.getQuantity());
         updateForm.setPrice(product.getPrice());
 
-        //view에서 참고할 수 있게`
+        //view에서 참고할 수 있게
         model.addAttribute("updateForm", updateForm);
         return "product/updateForm";
     }
 
-    //수정(처리)
+    //수정
     @PostMapping("/{id}/edit")
     public String update(
             @PathVariable("id") Long productId,
             @Valid @ModelAttribute UpdateForm updateForm,
             BindingResult bindingResult,
-            //id값 전달을 위해
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes   //id값 전달을 위해
     ){
         //데이터 검증
         if (bindingResult.hasErrors()){
@@ -169,12 +168,14 @@ public class ProductController {
         redirectAttributes.addAttribute("id", productId);
         return "redirect:/products/{id}/detail";
     }
+
+
     //삭제(조회화면에서)
     @GetMapping("/{id}/del")
-    public String deleteById(@PathVariable("id") Long productId){
-
+    public String deleteById(
+            @PathVariable("id") Long productId
+    ){
         productSVC.delete(productId);
-
         return "redirect:/products";
     }
 
@@ -186,9 +187,21 @@ public class ProductController {
         model.addAttribute("products", products);
 
         if (products.size() == 0) {
-            throw new RuntimeException("오류발생");
+//            throw new BindException("등록된 상품정보가 없습니다");
         }
         return "product/all";
     }
 
+    //선택삭제
+    @PostMapping("/items/del")
+    public String deleteParts(@RequestParam("chk") List<Long> productIds){
+        log.info("productId={}", productIds);
+
+        if (productIds.size() > 0){
+            productSVC.deleteParts(productIds);
+        } else {
+            return "product/all";
+        }
+        return  "redirect:/products";
+    }
 }
