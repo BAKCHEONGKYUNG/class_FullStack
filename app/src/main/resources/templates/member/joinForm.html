@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+</head>
+<body>
+    <h3>회원가입</h3>
+    <hr>
+<!--    ${} 변수-->
+<!--    *{} 선택표현식, ${joinForm} 객체의 멤버에 접근한다.-->
+    <form id="frm" action="" method="post" th:object="${joinForm}">
+<!--        파라미터 name, 값 value-->
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p th:each="err:${#fields.globalErrors()}" th:text="${err}"></p>
+        </div>
+        <div>
+            <input type="text" id="id" name="email" placeholder="아이디" oninput="checkId()" th:field="*{email}">
+<!--            필드에 있는 정보를 줘야한다.-->
+            <span class="error"></span>
+            <span th:errors="*{email}"></span>
+        </div>
+        <div>
+            <input type="password" name="passwd" placeholder="비밀번호" th:field="*{passwd}">
+            <span class="error"></span>
+            <span th:errors="*{passwd}"></span>
+        </div>
+        <div>
+            <input type="password" name="passwdchk" placeholder="비밀번호확인" th:field="*{passwdchk}">
+            <span class="error"></span>
+            <span th:errors="*{passwdchk}"></span>
+        </div>
+        <div>
+            <input type="text" name="nickname" placeholder="별칭" th:field="*{nickname}">
+            <span th:errors="*{nickname}"></span>
+        </div>
+        <div><label for="">성별</label></div>
+        <div>
+            <label for="">남</label><input type="radio" name="gender" value="남자" th:field="*{gender}">
+            <label for="">여</label><input type="radio" name="gender" value="여자" th:field="*{gender}">
+        </div>
+        <div><label for="">취미</label></div>
+        <div>
+<!--            반복-->
+            <th:block th:each="hobby:${hobbies}">
+                <label for="" th:for="${#ids.next('hobby')}" th:text="${hobby.decode}">독서</label>
+                <input type="checkbox" name="hobby" value="독서" th:field="*{hobby}" th:value="${hobby.code}">
+            </th:block>
+<!--            보여지는 데이터, 입력하는 데이터의 의미는 다르다.-->
+<!--            <label for="">독서</label><input type="checkbox" name="bobby" value="독서" th:field="*{bobby}">-->
+<!--            <label for="">수영</label><input type="checkbox" name="bobby" value="수영" th:field="*{bobby}">-->
+<!--            <label for="">걷기</label><input type="checkbox" name="bobby" value="걷기" th:field="*{bobby}">-->
+<!--            <label for="">골프</label><input type="checkbox" name="bobby" value="골프" th:field="*{bobby}">-->
+        </div>
+        <div><label for="">지역</label></div>
+        <div>
+<!--            다중선택(multiple) or 하나만 선택가능-->
+            <select name="region" id="" th:field="*{region}">
+                <option value="">선택</option>
+
+                //타임리프에서 유일하게 사용할 수 있는 태그: 반복을 위해
+
+                <th:block th:each="region:${regions}">  //요서 하나씩 들고오기, code : 변수 이름/ {codes}컨트롤러에서 만들어진 객체
+
+                    //반복수행 태그
+
+                    <option value="" th:value="${region.code}" th:text="${region.decode}"></option>
+
+                </th:block>
+<!--                <option value="서울">서울</option>-->
+<!--                <option value="부산">부산</option>-->
+<!--                <option value="대구">대구</option>-->
+<!--                <option value="울산">울산</option>-->
+            </select>
+        </div>
+        <div><button th:text="#{button.join}">가입</button></div>
+    </form>
+    <script type="module">
+
+        import { ajax } from '/js/common.js';
+
+        const $email = document.querySelector('input[type=email]');
+
+        const chkEmail = res => {
+            if(res.header.rtcd == '00'){
+                if(res.data){
+                    $email.nextElementSibling.textContent='사용중인 아이디입니다.'
+                    $email.focus();
+                } else {
+                    $email.nextElementSibling.textContent='사용가능한 아이디입니다.'
+                }
+            } else if (res.header.rtcd == '01'){
+                $email.nextElementSibling.textContent=`${res.header.rtmsg}`
+                $email.focus();
+        }
+    }
+
+        const chkEmail_h = e => {
+            console.log('blur');
+
+            const url = `/api/members/email?email=${$email.value}`;
+            ajax.get(url)
+                .then(res => res.json())
+                .then(chkEmail)         //res => chkEmail(res)
+                .catch(console.error);  //err => console.error(err)
+        }
+        $email.addEventListener('blur', chkEmail_h, false);
+
+    </script>
+</body>
+</html>
