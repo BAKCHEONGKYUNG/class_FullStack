@@ -84,7 +84,7 @@ public class ProductDAOImplTest2 {
         Assertions.assertThat(deleteRowCnt).isEqualTo(1);
 
         boolean exist = productDAO.isExist(productIds.get(idx));
-        Assertions.assertThat(exist);
+        Assertions.assertThat(exist).isFalse();
 
         List<Product> list = productDAO.findAll();
         list.stream().forEach(product -> log.info("product={}", product));

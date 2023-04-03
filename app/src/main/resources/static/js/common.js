@@ -38,4 +38,4 @@ const ajax = {
     },
   };
 
-  export{ajax};
+  export{ ajax };

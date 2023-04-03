@@ -23,17 +23,17 @@ public interface ProductDAO {
     Optional<Product> findById(Long productId);
 
     /**
-     * /수정(명확하게, productId, product)
+     * 수정(명확하게, productId, product)
      * @param productId 상품아이디
      * @param product 상품
-     * @return
+     * @return 수정된 레코드 수
      */
     //(수정할 Id, 수정할 데이터(상품))
     // int 수정할 개수
     int update(Long productId, Product product);
 
     /**
-     * /삭제(삭제건수 반환)
+     * 삭제(삭제건수 반환)
      * @param productId 상품아이디
      * @return 삭제된 레코드 수
      */
@@ -41,17 +41,23 @@ public interface ProductDAO {
     int delete(Long productId);
 
     /**
+     * 부분삭제
+     * @param productIds
+     * @return
+     */
+    int deleteParts(List<Long> productIds);
+
+    /**
      * 전체 삭제
-     * @return 목록
+     * @return 삭제한 레코드 건수
      */
     int deleteAll();
 
     /**
-     *
-     * @return 리스트
+     * 목록
+     * @return 상품목록
      */
     List<Product> findAll();
-
 
     /**
      * 상품의 존재유무

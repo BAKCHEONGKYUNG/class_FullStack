@@ -125,6 +125,19 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     /**
+     * 부분삭제
+     *
+     * @param productIds
+     * @return
+     */
+    @Override
+    public int deleteParts(List<Long> productIds) {
+        String sql = "delete from product where product_id in ( :ids ) ";
+        Map<String, List<Long>> param = Map.of("ids", productIds);
+        return template.update(sql, param);
+    }
+
+    /**
      * 전체 삭제
      *
      * @return
@@ -132,7 +145,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public int deleteAll() {
         String sql = "delete from product ";
-        Map<String, String> param = Map.of("","");
+        Map<String, String> param = new LinkedHashMap<>();
         int deletedRowCnt = template.update(sql, param);
         return deletedRowCnt;
     }
@@ -153,7 +166,8 @@ public class ProductDAOImpl implements ProductDAO {
         List<Product> list = template.query(
                 sb.toString(),
                 //Product.class, 레코드를 담을 타입 product_id, pname, quantity, price
-                BeanPropertyRowMapper.newInstance(Product.class)  // 레코드 컬럼과 자바객체 멤버필드가 동일한 이름일경우, camelcase지원
+                // 레코드 컬럼과 자바객체 멤버필드가 동일한 이름일경우, camelcase지원
+                BeanPropertyRowMapper.newInstance(Product.class)
         );
 
         return list;
@@ -220,6 +234,7 @@ public class ProductDAOImpl implements ProductDAO {
     public boolean isExist(Long productId) {
         boolean isExist = false;
         String sql = "select count(*) from product where product_id = :product_id ";
+
         //단일 값 구하기
         Map<String, Long> param = Map.of("product_id", productId);
         //3)단일행, 단일 열

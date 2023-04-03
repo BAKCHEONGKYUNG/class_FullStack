@@ -3,19 +3,24 @@ package com.kh.app.domain.member.dao;
 import com.kh.app.domain.entity.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberDAO {
-    //가입 db레코드 생성
+    /**
+     * 가입
+     * @param member
+     * @return
+     */
     Member save(Member member);
 
     //수정
     void update(Long memberId, Member member);
 
-    //조회by mail
-    Member findByEmail(String email);
+    //조회 by mail
+    Optional<Member> findByEmail(String email);
 
     //조회 by member_id
-    Member findById(String memberId);
+    Optional<Member> findById(Long memberId);
 
     //전체조회
     List<Member> findAll();
@@ -23,17 +28,13 @@ public interface MemberDAO {
     //탈퇴
     void delete(String email);
 
-    //회원유무
+    //회원유무, LoginForm.java
     boolean isExist(String email);
 
-    //로그인
-    Member login(String email, String passwd);
+    //로그인, LoginForm.java
+    Optional<Member> login(String email, String passwd);
 
     //아이디찾기
-    String findEmailByNicknames(String nickname);
-
-    //비밀번호찾기
-    String findPasswdByIdAndNickname(String memberId, String passwd);
-
+    Optional<String> findEmailByNickname(String nickname);
 
 }

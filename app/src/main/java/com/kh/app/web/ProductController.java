@@ -2,9 +2,9 @@ package com.kh.app.web;
 
 import com.kh.app.domain.entity.Product;
 import com.kh.app.domain.product.svc.ProductSVC;
-import com.kh.app.web.form.DetailForm;
-import com.kh.app.web.form.SaveForm;
-import com.kh.app.web.form.UpdateForm;
+import com.kh.app.web.form.product.DetailForm;
+import com.kh.app.web.form.product.SaveForm;
+import com.kh.app.web.form.product.UpdateForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Controller
 @RequestMapping("/products")
-@RequiredArgsConstructor
+@RequiredArgsConstructor    //final멤버 필드를 매개값으로, 생성자를 자동 생성
 public class ProductController {
 
     private final ProductSVC productSVC;
@@ -56,6 +56,7 @@ public class ProductController {
 //        log.info("pname={}, quantity={}, price={}", pname,quantity,price);
         log.info("saveForm={}", saveForm);
 
+        //데이터 검증
         //어노테이션 기반 검증
         if(bindingResult.hasErrors()){
             log.info("bindingResult={}", bindingResult);
@@ -157,7 +158,7 @@ public class ProductController {
             return "product/updateForm";
         }
 
-        //정산처리
+        //정상처리
         Product product = new Product();
         product.setProductId(productId);
         product.setPname(updateForm.getPname());
@@ -186,9 +187,23 @@ public class ProductController {
         model.addAttribute("products", products);
 
         if (products.size() == 0) {
-            throw new RuntimeException("오류발생");
+//            throw new BizException("오류발생");
         }
         return "product/all";
+    }
+
+    //선택삭제
+    @PostMapping("/items/del")
+    public String deleteParts(
+        @RequestParam("chk") List<Long> productIds
+    ){
+        log.info("ProductIds={}", productIds);
+        if (productIds.size() > 0){
+            productSVC.deleteParts(productIds);
+        } else {
+            return "product/all";
+        }
+        return "redirect:/products";
     }
 
 }

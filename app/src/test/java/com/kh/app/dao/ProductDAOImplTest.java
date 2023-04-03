@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -76,13 +77,13 @@ public class ProductDAOImplTest {
         product.setPrice(1000000L);
 
         //update(productId, product) 매개값을 던진다.
-        int updatedRowCont = productDAO.update(productId, product);
+        int updatedRowCount = productDAO.update(productId, product);
 
         //수정결과 확인
         Optional<Product> findedProduct = productDAO.findById(productId);
 
         //예상값과 실제값이 맞는지 확인
-        Assertions.assertThat(updatedRowCont).isEqualTo(1);
+        Assertions.assertThat(updatedRowCount).isEqualTo(1);
         Assertions.assertThat(findedProduct.get().getPname()).isEqualTo(product.getPname());
         Assertions.assertThat(findedProduct.get().getQuantity()).isEqualTo(product.getQuantity());
         Assertions.assertThat(findedProduct.get().getPrice()).isEqualTo(product.getPrice());
@@ -95,18 +96,17 @@ public class ProductDAOImplTest {
         Long productId = 4L;
         int deleteRowCount = productDAO.delete(productId);
         Optional<Product> findedProduct = productDAO.findById(productId);
-//        Product product = findedProduct.orElseThrow();
+        //Product product = findedProduct.orElseThrow();
 
         //case1)
-        Assertions.assertThat(findedProduct.ofNullable("없음")
-                .orElseThrow())
-                .isEqualTo("없음");
+        //Assertions.assertThat(findedProduct.ofNullable("없음")
+        //        .orElseThrow())
+        //        .isEqualTo("없음");
 
         //case2
         //예상되는 입셉션이 일어나면 참이다.
         Assertions.assertThatThrownBy(() -> findedProduct.orElseThrow())
                 .isInstanceOf(NoSuchElementException.class);
-
     }
 
     //목록
@@ -151,7 +151,6 @@ public class ProductDAOImplTest {
         int deletedRows = productDAO.deleteAll();
         int countOfRecord = productDAO.countOfRecord();
         Assertions.assertThat(countOfRecord).isEqualTo(0);
-        log.info("deletedRows={}", deletedRows);
     }
 
     @Test
@@ -159,5 +158,13 @@ public class ProductDAOImplTest {
     void countOfRecord(){
         int countOfRecord = productDAO.countOfRecord();
         log.info("countOfRecord={}", countOfRecord);
+    }
+
+    @Test
+    @DisplayName("부분삭제")
+    void deleteParts(){
+        List<Long> productIds = Arrays.asList(2L, 3L, 4L);
+        int rows = productDAO.deleteParts(productIds);
+        Assertions.assertThat(rows).isEqualTo(productIds.size());
     }
 }

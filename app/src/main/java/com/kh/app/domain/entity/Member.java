@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//테이블과 Mapping
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

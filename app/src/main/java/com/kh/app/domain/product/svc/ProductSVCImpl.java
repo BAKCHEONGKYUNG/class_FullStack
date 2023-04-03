@@ -14,9 +14,9 @@ import java.util.Optional;
 public class ProductSVCImpl implements ProductSVC {
 
     private final ProductDAO productDAO;
+
     @Override
     public Long save(Product product) {
-
         return productDAO.save(product);
     }
 
@@ -33,6 +33,17 @@ public class ProductSVCImpl implements ProductSVC {
     @Override
     public int delete(Long productId) {
         return productDAO.delete(productId);
+    }
+
+    /**
+     * 부분삭제
+     *
+     * @param productIds
+     * @return
+     */
+    @Override
+    public int deleteParts(List<Long> productIds) {
+        return productDAO.deleteParts(productIds);
     }
 
     @Override

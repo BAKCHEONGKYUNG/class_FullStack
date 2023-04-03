@@ -9,12 +9,23 @@ import java.util.Optional;
 public interface ProductSVC {
     //등록
     Long save(Product product);
+
     //조회
     Optional<Product> findById(Long productId);
+
     //수정(명확하게, productId, product)
     int update(Long productId, Product product);
+
     //삭제(삭제건수 반환)
     int delete(Long productId);
+
+    /**
+     * 부분삭제
+     * @param productIds
+     * @return
+     */
+    int deleteParts(List<Long> productIds);
+
     //전체목록(상품을 담을 수 있는 컬렉션이 필요)
     List<Product> findAll();
 
