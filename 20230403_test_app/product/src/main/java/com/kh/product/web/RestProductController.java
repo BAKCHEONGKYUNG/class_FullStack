@@ -27,37 +27,42 @@ public class RestProductController {
     ){
         RestResponse<Object> res = null;
 
+        //등록
         Product product = new Product();
-        product.setPname(saveRest.getPname());
-        product.setQuantity(saveRest.getQuantity());
-        product.setPrice(saveRest.getPrice());
 
-        Long pid = productSVC.save(product);
-        product.setPid(pid);
+        try{
+            Long quantity = saveRest.getQuantity();
+            Long price = saveRest.getPrice();
+            product.setPname(saveRest.getPname());
+            product.setQuantity(quantity);
+            product.setPrice(price);
 
-        if (pid > 0){
-            res = RestResponse.createRestResponse("00", "성공", product);
-        } else {
-            res = RestResponse.createRestResponse("99", "실패", "서버오류");
+            Long pid = productSVC.save(product);
+            product.setPid(pid);
+
+            if(pid > 0 ) {
+                res = RestResponse.createRestResponse("00", "성공", product);
+            }else{
+                res = RestResponse.createRestResponse("99", "실패", "서버오류");
+            }
+        }catch(NumberFormatException e){
+            res = RestResponse.createRestResponse("99", "숫자만 입력해주세요!","");
         }
         return res;
     }
 
     //상품조회
     @GetMapping("/{id}")
-    public RestResponse<Object> findById(
-            @PathVariable("id") Long pid
-    ){
+    public RestResponse<Object> findById(@PathVariable("id") Long pid){
         RestResponse<Object> res = null;
 
         //1)상품존재유무판단
-        if (!productSVC.isExist(pid)){
-            throw new RestBizException("99", "해당하는 상품이 없습니다.");
+        if(!productSVC.isExist(pid)){
+            throw new RestBizException("99","해당 상품이 없습니다.");
         }
 
         Optional<Product> findedProduct = productSVC.findById(pid);
         res = RestResponse.createRestResponse("00", "성공", findedProduct);
-
         return res;
     }
 
@@ -69,9 +74,9 @@ public class RestProductController {
     ){
         RestResponse<Object> res = null;
 
-        //1)상품존재유무 판단
-        if (!productSVC.isExist(pid)){
-            throw new RestBizException("99", "해당 상품이 없습니다.");
+        //1)상품존재유무판단
+        if(!productSVC.isExist(pid)){
+            throw new RestBizException("99","해당 상품이 없습니다.");
         }
 
         //2)수정
@@ -80,69 +85,76 @@ public class RestProductController {
         product.setQuantity(updateRest.getQuantity());
         product.setPrice(updateRest.getPrice());
 
-        int updateRowCnt = productSVC.update(pid, product);
+        int updatedRowCnt = productSVC.update(pid, product);
         updateRest.setPid(pid);
 
-        if (updateRowCnt == 1){
+        if(updatedRowCnt == 1 ) {
             res = RestResponse.createRestResponse("00", "성공", updateRest);
-        } else {
+        }else{
             res = RestResponse.createRestResponse("99", "실패", "서버오류");
         }
         return res;
     }
 
+
     //상품삭제
     @DeleteMapping("/{id}")
-    public RestResponse<Object> delete(
-            @PathVariable("id") Long pid
-    ){
+    public RestResponse<Object> delete(@PathVariable("id") Long pid){
         RestResponse<Object> res = null;
 
-        //1)상품존재유무 판단
-        if (!productSVC.isExist(pid)){
-            throw new RestBizException("99", "해당 상품이 없습니다.");
+        //1)상품존재유무판단
+        if(!productSVC.isExist(pid)){
+            throw new RestBizException("99","해당 상품이 없습니다.");
         }
 
         //2)상품삭제
-        int deleteRowCnt = productSVC.delete(pid);
-        if (deleteRowCnt == 1){
+        int deletedRowCnt = productSVC.delete(pid);
+        if(deletedRowCnt == 1 ) {
             res = RestResponse.createRestResponse("00", "성공", null);
-        } else {
+        }else{
             res = RestResponse.createRestResponse("99", "실패", "서버오류");
         }
         return res;
     }
 
     //상품목록
+//    @GetMapping
+//    public RestResponse<Object> findAll(){
+//        RestResponse<Object> res = null;
+//        List<Product> list = productSVC.findAll();
+//        if(list.size() > 0) {
+//            res = RestResponse.createRestResponse("00", "성공", list);
+//        }else{
+//            res = RestResponse.createRestResponse("01", "상품이 1건도 존재하지 않습니다.", null);
+//        }
+//        return res;
+//    }
+
     @GetMapping
     public RestResponse<Object> findAll(){
         RestResponse<Object> res = null;
         List<Product> list = productSVC.findAll();
-
-        if (list.size() > 0){
+        if(list.size() > 0) {
             res = RestResponse.createRestResponse("00", "성공", list);
-        } else {
-            res = RestResponse.createRestResponse("01", "상품이 존재하지 않습니다.", null );
+        }else{
+            res = RestResponse.createRestResponse("01", "상품이 1건도 존재하지 않습니다.", null);
         }
         return res;
     }
 
     //선택항목삭제
-    @PostMapping(value = "/items/del")
-    public RestResponse<Object> deleteItems(
-            @RequestBody List<Long> ids
-    ){
+    @PostMapping(value="/items/del")
+    public  RestResponse<Object> deleteItems(@RequestBody List<Long> ids){
         RestResponse<Object> res = null;
-
-        if (ids.size() < 1){
-            res = RestResponse.createRestResponse("01", "선택된 항목이 없습니다.", null);
+//    log.info("ids={}",ids);
+        if(ids.size() < 1) {
+            res = RestResponse.createRestResponse("01", "삭제항목 미선택", null);
             return res;
         }
 
         int deletedRows = productSVC.deleteParts(ids);
-
-        if (deletedRows > 0){
-            res = RestResponse.createRestResponse("0", "성공", deletedRows);
+        if(deletedRows > 0) {
+            res = RestResponse.createRestResponse("00", "성공", deletedRows);
         }
         return res;
     }

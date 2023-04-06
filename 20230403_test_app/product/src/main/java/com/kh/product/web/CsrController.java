@@ -10,6 +10,6 @@ public class CsrController {
 
     @GetMapping("/products")
     public String managerProduct(){
-        return "/csr/product/product";
+        return "/csr/product";
     }
 }

@@ -52,7 +52,6 @@ public class MemberController {
         return codes;
     }
 
-
     @ModelAttribute("regions") //모든 view에서 "code"로 접근이 가능하다.
     public List<CodeDecode> regions(){
         List<CodeDecode> codes = new ArrayList<>();
@@ -70,7 +69,6 @@ public class MemberController {
 
     //SSR방식,
     //반환타입 String
-
     //회원가입양식(Responce)
     @GetMapping("/add") // members/add
     public String joinForm(Model model){

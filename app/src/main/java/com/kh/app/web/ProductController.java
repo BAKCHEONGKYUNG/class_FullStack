@@ -1,7 +1,10 @@
 package com.kh.app.web;
 
+import com.kh.app.domain.common.svc.MultipartFileToUploadFile;
 import com.kh.app.domain.entity.Product;
+import com.kh.app.domain.entity.UploadFile;
 import com.kh.app.domain.product.svc.ProductSVC;
+import com.kh.app.web.common.AttachFileType;
 import com.kh.app.web.form.product.DetailForm;
 import com.kh.app.web.form.product.SaveForm;
 import com.kh.app.web.form.product.UpdateForm;
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductSVC productSVC;
+    private MultipartFileToUploadFile multipartFileToUploadFile;
 
     //등록양식
     @GetMapping("/add")
@@ -86,7 +90,7 @@ public class ProductController {
         }
 
 
-
+        //product 객체에 담는다.
         //등록
         Product product = new Product();
         //데이터 베이스 저장
@@ -95,8 +99,17 @@ public class ProductController {
         product.setPrice(saveForm.getPrice());
 
 
+        //UploadFile에 저장한ㄷ.
+        //파일첨부(상수로해서 값을 너어 준다)
+        UploadFile attachFiles = multipartFileToUploadFile.convert(saveForm.getAttachFile(), AttachFileType.F010301);
+        List<UploadFile> imageFiles = multipartFileToUploadFile.convert(saveForm.getImageFiles(), AttachFileType.F010302);
+        //한번에 insert를 하기 위해서.(단수 attachFiles)
+        imageFiles.add(attachFiles);
+
+
+
 //        Long save = productSVC.save(product);
-        Long savedProductId = productSVC.save(product);
+        Long savedProductId = productSVC.save(product, imageFiles);
         //redirectAttributes 받아서
         redirectAttributes.addAttribute("id", savedProductId);
         //조회하면서 가야하기 때문에

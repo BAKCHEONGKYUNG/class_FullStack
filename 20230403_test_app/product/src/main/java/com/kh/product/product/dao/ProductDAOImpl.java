@@ -34,8 +34,8 @@ public class ProductDAOImpl implements ProductDAO {
     public Long save(Product product) {
 
         StringBuffer sb = new StringBuffer();
-        sb.append("insert into product_test(pid, pname, quantity, price) ");
-        sb.append("values(product_test_pid_seq.nextval, :pname, :quantity, :price) ");
+        sb.append("insert into product(pid, pname, quantity, price) ");
+        sb.append("values(product_pid_seq.nextval, :pname, :quantity, :price) ");
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(product);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -56,7 +56,7 @@ public class ProductDAOImpl implements ProductDAO {
 
         StringBuffer sb = new StringBuffer();
         sb.append("select pid, pname, quantity, price ");
-        sb.append("  from product_test ");
+        sb.append("  from product ");
         sb.append(" where pid = :pid ");
 
         try {
@@ -71,20 +71,7 @@ public class ProductDAOImpl implements ProductDAO {
         }
     }
 
-    //수동매핑
-    private RowMapper<Product> productRowMapper() {
 
-        return (rs, rowNum) -> {
-            Product product = new Product();
-
-            product.setPid(rs.getLong("pid"));
-            product.setPname(rs.getString("pname"));
-            product.setQuantity(rs.getLong("quantity"));
-            product.setPrice(rs.getLong("price"));
-
-            return product;
-        };
-    }
 
     /**
      * @param pid
@@ -95,7 +82,7 @@ public class ProductDAOImpl implements ProductDAO {
     public int update(Long pid, Product product) {
 
         StringBuffer sb = new StringBuffer();
-        sb.append("update product_test ");
+        sb.append("update product ");
         sb.append("   set pname = :pname ");
         sb.append("       quantity = :quantity ");
         sb.append("       price = :price ");
@@ -118,7 +105,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public int delete(Long pid) {
 
-        String sql = "delete from product_test where pid = :pid ";
+        String sql = "delete from product where pid = :pid ";
 
         return template.update(sql, Map.of("pid", pid));
     }
@@ -131,7 +118,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public int deleteParts(List<Long> pids) {
 
-        String sql = "delete from product_test where pid in ( :ids ) ";
+        String sql = "delete from product where pid in ( :ids ) ";
 
         Map<String, List<Long>> param = Map.of("ids", pids);
         return template.update(sql, param);
@@ -144,7 +131,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public int deleteAll() {
 
-        String sql = "delete from product_test ";
+        String sql = "delete from product ";
 
         Map<String, String> param = new LinkedHashMap<>();
 
@@ -155,19 +142,23 @@ public class ProductDAOImpl implements ProductDAO {
 
     /**
      * 상품목록
+     *
      * @return
+     */
+    /**
+     * 목록
+     *
+     * @return 상품목록
      */
     @Override
     public List<Product> findAll() {
-
         StringBuffer sb = new StringBuffer();
         sb.append("select pid, pname, quantity, price ");
-        sb.append("  from product_test ");
+        sb.append("  from product ");
 
-        //여러행 조회
         List<Product> list = template.query(
                 sb.toString(),
-                BeanPropertyRowMapper.newInstance(Product.class)
+                BeanPropertyRowMapper.newInstance(Product.class)  // 레코드 컬럼과 자바객체 멤버필드가 동일한 이름일경우, camelcase지원
         );
 
         return list;
@@ -175,29 +166,30 @@ public class ProductDAOImpl implements ProductDAO {
 
     class RowMapperImpl implements RowMapper<Product> {
 
-        /**
-         * Implementations must implement this method to map each row of data in the
-         * {@code ResultSet}. This method should not call {@code next()} on the
-         * {@code ResultSet}; it is only supposed to map values of the current row.
-         *
-         * @param rs     the {@code ResultSet} to map (pre-initialized for the current row)
-         * @param rowNum the number of the current row
-         * @return the result object for the current row (may be {@code null})
-         * @throws SQLException if an SQLException is encountered while getting
-         *                      column values (that is, there's no need to catch SQLException)
-         */
         @Override
         public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-
             Product product = new Product();
             product.setPid(rs.getLong("pid"));
             product.setPname(rs.getString("pname"));
             product.setQuantity(rs.getLong("quantity"));
             product.setPrice(rs.getLong("price"));
-
             return product;
         }
     }
+
+    //수동 매핑
+    private RowMapper<Product> productRowMapper() {
+        return (rs, rowNum) -> {
+            Product product = new Product();
+            product.setPid(rs.getLong("pid"));
+            product.setPname(rs.getString("pname"));
+            product.setQuantity(rs.getLong("quantity"));
+            product.setPrice(rs.getLong("price"));
+            return product;
+        };
+    }
+
+
 
     /**
      * 상품의 존재유무
@@ -209,7 +201,7 @@ public class ProductDAOImpl implements ProductDAO {
 
         boolean isExist = false;
 
-        String sql = "select count(*) from product_test where pid = :pid ";
+        String sql = "select count(*) from product where pid = :pid ";
 
         //단일 값 구하기
         Map<String, Long> param = Map.of("pid", pid);
@@ -228,7 +220,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public int countOfRecord() {
 
-        String sql = "select count(*) from product_test ";
+        String sql = "select count(*) from product ";
 
         Map<String, String> param = new LinkedHashMap<>();
 

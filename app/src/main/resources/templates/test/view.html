@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>view</title>
+</head>
+<body>
+<!--  변수표현식-->
+  <p th:test="${}"></p>
+    <h3>결과화면</h3>
+
+    <p th:test="${member.id}">${member.id}</p>
+    <p th:test="${member.age}"></p>
+    <p th:test="${var1}"></p>
+    <p th:test="${var2}"></p>
+    <p th:test="${var3}"></p>
+
+<!--  컬렉션객체 사용. 반복 필요-->
+    <ul>
+        <!--<li th:each="ele : ${list}" th:text="${ele}">a</li>-->
+        <th:block th:each="ele : ${list}">
+            <li>b</li>
+        </th:block>
+<!--        <li>c</li>-->
+    </ul>
+
+<!-- 지역변수의 경우, 이렇게 표현이 가능하다. -->
+    <div th:with="var=${member.id}">
+        <p>[[${var}]]</p>
+    </div>
+</body>
+</html>

@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice(assignableTypes = ProductController.class)
+@ControllerAdvice(assignableTypes = RestProductController.class)
 public class ExHandler {
     @ExceptionHandler(BizException.class)
     public String BizExHandle(BizException e, Model model){
